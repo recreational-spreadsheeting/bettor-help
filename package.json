@@ -1,0 +1,11 @@
+{
+  "name": "bettor-help-plugin",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Tooling shell for the bettor-help Claude Code plugin marketplace. Holds validation and dev-plugin generation scripts; the plugins themselves ship from plugins/.",
+  "scripts": {
+    "validate": "node scripts/validate-plugin.mjs",
+    "gen:dev": "node scripts/gen-dev-plugin.mjs",
+    "check:dev": "node scripts/gen-dev-plugin.mjs --check"
+  }
+}
