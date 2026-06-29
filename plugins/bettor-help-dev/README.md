@@ -6,8 +6,6 @@ Multi-sport DFS lineup builder and optimizer for Claude Code.
 
 > **Note:** This plugin is **inert without a Clerk subscription.** The MCP server at `https://mcp.bettor.help/mcp` requires authentication via `bettor-help login`.
 
-> **TODO:** `PROD_CLERK_CLIENT_ID_PENDING` in `.mcp.json` must be replaced with the real OAuth client ID once the production Clerk OAuth client is created.
-
 ## Installation
 
 ```
