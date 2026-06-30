@@ -1,52 +1,76 @@
 ---
 name: onboarding-connect
-description: First-run setup for Bettor Help — install the CLI, authenticate via Clerk, confirm your subscription and active sport, then start a sport session. Use when a new user asks how to get started, install the plugin, log in, or connect to Bettor Help for the first time.
+description: First-run guide for Bettor Help — get a new user from a fresh start into a live MLB session with their first profile and first build. Use when a new user asks how to get started, says they're new, or when the bettor.help onboarding hook flags an un-onboarded user.
 ---
 
-# Onboarding — connect to Bettor Help
+# Onboarding — get started with Bettor Help
 
-One-time setup to go from a fresh plugin install to a live sport session.
+Walk a (possibly brand-new) user from setup to their first built lineups. Be
+warm and concrete, **one step at a time**, and confirm each step worked before
+moving on — assume they may be new to both Claude Code and DFS tooling.
 
-## 1. Install the CLI
+## How they most likely got here
 
-```
-npm install -g @bettor-help/cli
-```
+If they ran **`bettor-help start`** (the one-command onboarding), then the CLI is
+installed, they're signed in, the plugins are enabled in `~/bettor-help`, and
+they launched Claude Code there. In that case **everything below from step 2 is
+already done — skip straight to "Start a sport session."**
 
-The `bettor-help` CLI handles authentication and local session tokens. Node 18+ required.
-
-## 2. Log in (Clerk OAuth)
-
-```
-bettor-help login
-```
-
-This opens a browser window for Clerk authentication. After you approve, the CLI writes a local session token. The token is stored on your machine only — the server never sees your DK cookie or local files.
-
-## 3. Confirm your subscription
+If they're NOT set up yet (no CLI, not signed in), the fastest path is the single
+command — have them run it in their terminal, then come back:
 
 ```
-bettor-help status
+npm install -g @bettor-help/cli   # one-time; needs Node 20+
+bettor-help start                 # creates ~/bettor-help, enables the plugins, signs in
+cd ~/bettor-help && claude        # reopen Claude Code here
 ```
 
-The output shows which sports your subscription covers and the active tier (single-sport at $25/mo or all-access at $50/mo). A 7-day trial is available without a credit card. If the command shows "not authenticated," re-run `bettor-help login`.
+## 1. Confirm they're signed in
 
-## 4. Start a sport session
+```
+bettor-help whoami
+```
 
-Once authenticated, start a session for your active sport via the MCP tool:
+Shows the signed-in account + token expiry. If it says "Not signed in," have them
+run `bettor-help login` (opens a browser for Clerk sign-in; the token is stored
+locally — the server never sees their DK cookie or local files).
+
+## 2. Start a sport session
 
 ```
 start_sport_session(sport="mlb")
 ```
 
-This activates the sport-specific tool surface. Tools are **gated by your active sport** — without a session, sport-specific tools are not exposed. After starting, re-list the available tools (`list_tools` in your MCP client) to see what's live for your sport and subscription.
+MLB is the most built-out sport. This activates the sport-specific tools — they're
+**gated by your active sport**, so without a session the MLB tools aren't exposed.
+If it returns `subscription_required`, their account doesn't cover that sport yet.
 
-## 5. Hand off to the orchestrator
+## 3. Create their first profile
 
-You're connected. From here, use the **`sport-session-orchestrator`** skill to discover available tools, switch sports, or route to build / results / reconcile workflows.
+Profiles drive every build — and they're **user-owned**: there are no preset
+profiles, so the first real step is making one. Use the **`profiles`** skill to
+explain the knobs and save a first profile (`save_profile`). Keep it simple for a
+first pass; they can tune later.
 
-## Troubleshooting
+## 4. Build their first lineups
 
-- **"Not authenticated"** — run `bettor-help login` again. The token may have expired.
-- **Sport tools missing after `start_sport_session`** — confirm your subscription covers the sport (`bettor-help status`), then re-list tools. A subscription that doesn't cover a sport returns "subscription_required."
-- **CLI not found** — confirm Node is installed (`node --version`) and your PATH includes the npm global bin directory (`npm bin -g`).
+```
+build_lineups
+```
+
+Walk through the output with them — what was built and why. This is the payoff;
+make sure they see it land.
+
+## 5. Hand off
+
+They're onboarded. From here, route via the **`sport-session-orchestrator`** skill
+to build again, switch sports, see results (`dfs-results`), or reconcile contests
+(`reconcile-contests`).
+
+## If something's off
+
+- **`bettor-help` not found** — Node isn't installed or the npm global bin isn't on
+  PATH. Check `node --version` (need 20+); reopen the terminal after installing.
+- **"Not signed in" / token expired** — `bettor-help login` again.
+- **MLB tools missing after `start_sport_session`** — re-list tools in the client;
+  if still missing, the subscription may not cover the sport (`subscription_required`).
