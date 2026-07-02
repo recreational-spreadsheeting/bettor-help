@@ -1,6 +1,6 @@
 {
   "name": "bettor-help-dev",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "[DEV CHANNEL — points at the dev environment, for testing] Multi-sport DFS lineup builder and optimizer. Build daily fantasy lineups for MLB and more.",
   "author": {
     "name": "Court Schuett"
@@ -23,7 +23,10 @@
       "Bash(test -s:*)",
       "Bash(realpath:*)",
       "Bash(pwd)",
-      "Bash(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      "Bash(date -u +%Y-%m-%dT%H:%M:%SZ)",
+      "Bash(bettor-help whoami)",
+      "Bash(bettor-help login)",
+      "Bash(bettor-help start:*)"
     ]
   }
 }
