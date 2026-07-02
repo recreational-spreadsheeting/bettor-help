@@ -43,7 +43,8 @@ The product's visible home is **`~/bettor-help/`**, one directory per slate day
 `entries/` + `results/` are archives Claude maintains **for** you.
 
 **Config lives separately, out of sight, in `~/.config/bettor-help/`** — `token.json`
-(entitlement) and `dk_cookie_header.txt` (your DK cookie). These are CLI-managed and
+(entitlement) and `dk_cookie_header.txt` (your DK cookie — set up once with
+`bettor-help cookie --login` on **CLI 0.1.4+**, then auto-refreshed). These are CLI-managed and
 **never** leave your machine. The rule: **working files are visible
 (`~/bettor-help/`); config is not (`~/.config/bettor-help/`).**
 
