@@ -58,10 +58,20 @@ Claude also does this for you as it builds — no habit required.
 
 Scoring your results pulls the contest field from DraftKings, which runs **on your
 machine** with your DK login. Ask Claude to "reconcile my contests" and the
-`reconcile-contests` skill walks you through it. The first time you'll need a fresh DK
-cookie — on **CLI 0.1.3+** run `bettor-help cookie` for a guided paste (and
-`bettor-help cookie --check` to confirm it's still fresh). Building lineups does **not**
-need this.
+`reconcile-contests` skill walks you through it. The first time, connect your DK
+session — on **CLI 0.1.4+**:
+
+```
+bettor-help cookie --login
+```
+
+This opens Chrome, you sign in to DraftKings once, and the CLI captures your session —
+after that it silently refreshes the cookie whenever it goes stale, so you shouldn't
+need to think about it again. Check anytime with `bettor-help cookie --check`.
+Building lineups does **not** need this.
+
+> Manual fallback (no Chrome installed, or `--login` unavailable): `bettor-help cookie`
+> walks you through pasting the `Cookie` header from your browser's devtools.
 
 ## Getting help
 
