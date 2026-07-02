@@ -15,7 +15,8 @@ the two. That's privacy by design, not a limitation.
 
 ## Where your files live
 
-The product's visible home is **`~/bettor-help/`**, one directory per slate day:
+The product's visible home is **`~/bettor-help/`**, one directory per slate day
+(on **CLI 0.1.3+**, `bettor-help day` creates/prints today's folder, `--open` opens it):
 
 ```
 ~/bettor-help/<YYYY-MM-DD>/
@@ -33,8 +34,9 @@ The product's visible home is **`~/bettor-help/`**, one directory per slate day:
 - **`entries/`** — the **assistant-maintained archive** of your DKEntries exports. You
   don't file these yourself: export from DK as normal (it lands in `~/Downloads`) and
   hand it to Claude — paste the path or just ask ("grab my entries"). Claude ingests it
-  and archives a copy here as `DKEntries-<slate_type>-dg<id>.csv`. **No new habits;
-  Downloads is fine.**
+  and archives a copy here as `DKEntries-<slate_type>-dg<id>.csv`. On **CLI 0.1.3+**,
+  `bettor-help entries` does the same scan-Downloads → archive → ingest yourself
+  (`--file`/`--dg`/`--profile` to be explicit). **No new habits; Downloads is fine.**
 - **`results/`** — reconcile outputs (standings, computed P&L), also assistant-maintained.
 
 **In short:** `builds/` + `swaps/` are where Claude puts files **you** grab for DK;

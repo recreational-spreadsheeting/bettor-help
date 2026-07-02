@@ -17,12 +17,12 @@ Note: `upload_contest_field` is **MLB only** today. It rejects non-DK `site` val
 
 ### 1. Check your DK cookie
 
-The standings fetch requires a valid DK session cookie. Symptom of an expired cookie: the fetch redirects to the DK login page. To refresh it:
+The standings fetch requires a valid DK session cookie. Symptom of an expired cookie: the fetch redirects to the DK login page. On **CLI 0.1.3+**, `bettor-help cookie` gives you a guided paste (and `bettor-help cookie --check` reports freshness) — it replaces the manual write-to-path step. To get the value:
 
 1. Open a `*.draftkings.com` request in your browser's DevTools (Network tab).
 2. Right-click the request → "Copy as cURL."
 3. Extract the `Cookie:` header value — that is your session cookie.
-4. Write it to the path your CLI expects: `bettor-help config set dk-cookie "<value>"` (or the path shown by `bettor-help config show`).
+4. Run `bettor-help cookie` and paste it when prompted (on older CLIs: `bettor-help config set dk-cookie "<value>"`, or the path shown by `bettor-help config show`).
 
 The cookie **never leaves your machine** — it is used only for local fetch commands.
 

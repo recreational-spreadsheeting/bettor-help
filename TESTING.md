@@ -42,15 +42,35 @@ profile, and builds your first lineups. If you'd rather kick it off yourself, sa
 
 > help me build an MLB lineup
 
+## Each day — open today's folder
+
+Your working files live under `~/bettor-help/<date>/`. On **CLI 0.1.3+** you can create
+or open today's folder in one step:
+
+```
+bettor-help day          # create/print today's folder
+bettor-help day --open    # and open it in your file browser
+```
+
+Claude also does this for you as it builds — no habit required.
+
 ## After contests settle — reconcile (optional)
 
 Scoring your results pulls the contest field from DraftKings, which runs **on your
 machine** with your DK login. Ask Claude to "reconcile my contests" and the
-`reconcile-contests` skill walks you through it (including grabbing your DK cookie
-the first time). Building lineups does **not** need this.
+`reconcile-contests` skill walks you through it. The first time you'll need a fresh DK
+cookie — on **CLI 0.1.3+** run `bettor-help cookie` for a guided paste (and
+`bettor-help cookie --check` to confirm it's still fresh). Building lineups does **not**
+need this.
 
 ## Getting help
 
-Stuck or something looks wrong? Tell Claude what you saw — it can check your
-sign-in (`bettor-help whoami`), your session, and your subscription, and guide you
-from there.
+Stuck or something looks wrong? **Start with the doctor** — on **CLI 0.1.3+**:
+
+```
+bettor-help doctor       # env self-check: node / login / cookie / MCP / home
+```
+
+It prints a ✓/✗ for each check with a fix hint. Paste its output to Claude (or into
+`#bettor-help`) and it can take it from there — it can also check your sign-in, your
+session, and your subscription and guide you from there.

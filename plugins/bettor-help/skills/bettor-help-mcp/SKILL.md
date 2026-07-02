@@ -30,8 +30,11 @@ mechanics, timings, the late-swap doctrine, and a worked call sequence — is in
 3. **Enter on DK.** Upload `dk_upload_csv` via DK's bulk **Upload Lineups**, then
    export **DKEntries.csv** from the contest's Edit Entries page (one per draft group).
 4. **Track.** `ingest_entries(dg, slate_date, dk_entries_csv=<export>,
-   profile_version="cash@1")` records every entry to the cloud ledger. The cloud
-   NEVER contacts DK — your exports are the bridge (privacy by design).
+   profile_version="cash@1")` records every entry to the cloud ledger — or, on
+   **CLI 0.1.3+**, run `bettor-help entries` to scan `~/Downloads` for the export,
+   archive it under today's folder, and ingest it in one step (`--file`/`--dg`/`--profile`
+   flags to be explicit). The cloud NEVER contacts DK — your exports are the bridge
+   (privacy by design).
 5. **Near lock, late-swap.** Re-run `build_for_dg` for fresh confirmed lineups; if
    players changed, `export_edit_entries(dg, new_lineup_csv=<fresh dk_upload_csv>)`
    returns a DK Edit-Entries CSV of ONLY the changed entries, overlaid onto existing
@@ -41,7 +44,7 @@ mechanics, timings, the late-swap doctrine, and a worked call sequence — is in
    `upload_contest_field` to pull standings, compute P&L attributed to the ingested
    `profile_version`, and feed the lake (cash lines + ownership corpus).
 
-**Where files live:** working files go in the visible `~/bettor-help/<YYYY-MM-DD>/{builds,entries,swaps,results}/` (one dir per slate day); config (`token.json`, `dk_cookie_header.txt`) stays out of sight in `~/.config/bettor-help/`. See `references/daily-process.md`.
+**Where files live:** working files go in the visible `~/bettor-help/<YYYY-MM-DD>/{builds,entries,swaps,results}/` (one dir per slate day — `bettor-help day` on **CLI 0.1.3+** creates/opens today's); config (`token.json`, `dk_cookie_header.txt`) stays out of sight in `~/.config/bettor-help/`. See `references/daily-process.md`.
 
 **Timings that matter:** early slates lock ~12:35 PM ET (enter first); main ~7 PM ET
 first-pitch window; night slates can't build until probable SPs post (afternoon).
