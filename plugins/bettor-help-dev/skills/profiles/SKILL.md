@@ -27,11 +27,11 @@ save_profile(name="my-profile", profile={...})
 
 The server validates the profile against the sport's option catalog before writing. If validation fails, the error names the offending field and what was expected — fix and re-save.
 
-**Faster path:** copy the built-in starter template, then edit it:
+**Faster path:** copy an existing profile of your own, then edit it:
 ```
-copy_profile(from="starter-cash", to="my-profile")
+copy_profile(from="my-existing-profile", to="my-profile")
 ```
-`starter-cash` seeds a valid floor-oriented profile you can edit and re-save.
+There are **no shipped/built-in profiles** — profiles are entirely user-owned. Build your first from scratch with `save_profile` (the knobs below), then `copy_profile` from it to spin up variants.
 
 ## MLB knobs reference
 
@@ -129,7 +129,7 @@ Then call `recommend_profile(games=N)` before building — it reads your registe
 - **`list_profiles`** — see all your saved profiles for the active sport (name, version, created_at).
 - **`show_profile(name=..., version=...)`** — view the full document (omit `version` for latest).
 - **`save_profile(name=..., profile={...})`** — save (or update) a profile. Validates first; rejects invalid ones with field-named errors.
-- **`copy_profile(from=..., to=...)`** — duplicate a profile under a new name, or seed from `starter-cash`.
+- **`copy_profile(from=..., to=...)`** — duplicate one of your own profiles under a new name.
 - **`check_profile(profile={...})`** — validate a profile without saving it.
 - **`recommend_profile(games=N)`** — get a recommendation from your profiles for a given slate size.
 - **`show_settings`** — view the current session/build settings.

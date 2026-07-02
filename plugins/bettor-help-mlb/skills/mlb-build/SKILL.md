@@ -32,23 +32,32 @@ Key knobs from the MLB catalog (see **`profiles`** for the full list):
 
 **Size-conditional profiles:** use `rules.resolution` to wire `ownership_source: rank_vendor` on ≥8-game slates (see the **`profiles`** skill for the exact syntax). `ownership_source: auto` is the default and applies the right source based on slate size.
 
-## Build sequence — run every time, immediately before lock
+## Build sequence — the daily loop
 
-1. **Check freshness** — `mlb_get_freshness` and `mlb_pipeline_status` before any build. If data is stale, wait for the refresh plane to catch up.
+Run this per draft group you'll play. The full walkthrough (DK mechanics, timings, worked call sequence) lives in the **`bettor-help-mcp`** skill's `references/daily-process.md`.
 
-2. **List slates** — `mlb_list_slates` to confirm which draft groups are live. Note the game count (used by `recommend_profile`).
+1. **Check freshness** — `mlb_get_freshness` and `mlb_pipeline_status` before any build. The pipeline self-serves, but the refresh plane runs on a schedule and can lag near lock. If data is stale, wait a cycle.
 
-3. **Get the contest's draft group** — confirm the contest you're entering. Double-Ups often live on sub-slates (3-game, afternoon, turbo) with their own `draftGroupId` distinct from the headline slate. A lineup is only coherent on the slate it was built for. Pull the contest's own draft group, not the headline.
+2. **List slates** — `mlb_list_slates` returns one row per draft group (main / early / night / turbo / afternoon), each with its `draft_group_id`, game count, and lock-relevant game times. Note the game count (used by `recommend_profile`).
 
-4. **Choose a profile** — `recommend_profile(games=N)` picks among your saved profiles by slate size. Or specify one directly.
+3. **Choose a profile** — `recommend_profile(format="cash", games=N)` picks among your saved profiles by slate size, or specify one directly. Profiles are USER-owned — see the **`profiles`** skill.
 
-5. **Build** — `build_lineups(profile="my-profile", count=1)` (or `build_for_dg` for a specific draft group, or `build_all_today` for all slates at once).
+4. **Build the draft group** — `build_for_dg(draft_group_id=<dg>, slate_type=<"main"|"early"|"night"|"turbo"|"afternoon">, profile="my-profile", slate_date=today)`.
+   - **Pass `slate_type` explicitly.** A known issue defaults a draft-group-only build to `main`, which mis-scopes any non-main slate. Always name the slate type.
+   - Double-Ups often live on sub-slates with their own `draft_group_id` distinct from the headline slate — a lineup is only coherent on the slate it was built for, so build against the contest's own draft group.
+   - The response carries the lineup (projection + real Stokastic `ownership` + `lineup_confidence` per player), a paste-ready **`dk_upload_csv`**, and honest `starting_status` diagnostics (e.g. "8/10 predicted — re-run near lock"; a night slate before probable SPs post reports "0 pitchers" — build it later, not an error).
 
-6. **Review the returned lineup(s)** — check: 10 slots filled, 10 unique players, total salary ≤ $50,000, no PPD or IL players.
+5. **Review the returned lineup** — check: 10 slots filled, 10 unique players, total salary ≤ $50,000, no PPD or IL players.
 
-7. **Validate starters** — every rostered SP must be a confirmed or predicted starter. Verify each SP against MLB official probables before uploading. A `predicted_starting` status is not proof the player is pitching — cross-check the MLB Stats API. A 0-point SP score means the player started and did poorly; it does not mean a scratch.
+6. **Validate starters** — every rostered SP must be a confirmed or predicted starter. Verify each SP against MLB official probables before uploading. A `predicted_starting` status is not proof the player is pitching — cross-check the MLB Stats API. A 0-point SP score means the player started and did poorly; it does not mean a scratch.
 
-8. **Save entries** — `save_entries(dkentries_csv=..., dg=<draft_group_id>, profile_version=...)`. Capture entry IDs at reserve; player-only upload CSVs carry no contest IDs and can't be reconciled later.
+7. **Enter on DK** — upload `dk_upload_csv` via DK's bulk **Upload Lineups**, then export **DKEntries.csv** from the contest's Edit Entries page (one export per draft group). The cloud never logs into DK — your export is the bridge.
+
+8. **Track** — `ingest_entries(dg=<draft_group_id>, slate_date=today, dk_entries_csv=<DKEntries.csv text>, profile_version="cash@1")` records every entry to the cloud ledger, stamped with the `profile_version` so results attribute to the exact config you ran. (`save_entries` is the lower-level capture; `ingest_entries` is the daily-loop entry point.)
+
+9. **Near lock — re-build and late-swap** — re-run `build_for_dg` for fresh confirmed lineups. If players changed, `export_edit_entries(dg=<draft_group_id>, new_lineup_csv=<fresh dk_upload_csv>)` returns a DK Edit-Entries CSV of ONLY the changed entries, overlaid onto your existing entry IDs — upload via DK's Edit Entries. **Never delete + re-enter — that forfeits the slot.** `late_swap_check` flags exposure before lock.
+
+10. **After settle — reconcile** — run the **`reconcile-contests`** skill → `upload_contest_field` to pull standings, compute P&L attributed to the ingested `profile_version`, and feed the lake (cash lines + ownership corpus).
 
 ## Operational invariants (non-negotiable)
 
