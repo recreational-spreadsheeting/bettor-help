@@ -1,6 +1,6 @@
 {
   "name": "bettor-help-mlb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MLB-specific DFS lineup builder. Projections, stacking, ownership modeling, and optimizer for MLB daily fantasy.",
   "author": {
     "name": "Court Schuett"
