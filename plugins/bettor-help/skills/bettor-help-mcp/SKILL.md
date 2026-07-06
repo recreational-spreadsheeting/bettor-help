@@ -108,6 +108,12 @@ Two build **tools**, plus **prompts** that orchestrate them:
 - **`build_lineup`** / **`early_build_lineup`** (**prompts**) — single-slate guided builds
   (parse → project → rank stacks → generate → ownership). `early_build_lineup` is the
   before-batting-orders-post variant.
+- **`get_build_provenance`** — the durable record of a past build: which profile
+  (name + version + hash), resolved knobs, ownership source, data freshness at build
+  time, and the exact player pool that produced the lineup. Pass the build's
+  `correlation_id` for the full record, or `slate_date` (+ optional `draft_group_id`)
+  for summaries of that day's builds. Reads only your own builds. Use it to answer
+  "what data built this lineup?" after the fact.
 
 ## Reads (projections, vegas, status)
 
@@ -128,6 +134,14 @@ Two build **tools**, plus **prompts** that orchestrate them:
   land in the cloud automatically and it completes unattended (no manual crosswalk
   babysitting / `--allow-errors` step for crosswalk misses). Still query these before
   treating any datum as live: the refresh plane runs on a schedule and can lag near lock.
+- **`mlb_submit_field_simulation`** / **`mlb_get_field_simulation_result`** — run a
+  contest-realistic field simulation for a slate (async: submit, then poll). Submit
+  takes optional `slate_date`, `field_size` (default 8000, max 100k), `draws`
+  (default 1000, max 10k), and ownership / stack-weight overrides; it returns a
+  `variant_id` + `poll_after_s`. Poll with that `variant_id` **and the same
+  `slate_date` you submitted with** — the poll defaults to today ET, so yesterday's
+  job won't be found under the default. `complete` returns artifacts inline (small)
+  or via `presigned_url` (large). Subscription quota applies.
 - Slate/game discovery: **`mlb_list_slates`**, **`mlb_get_slate_manifest`**,
   **`mlb_get_games_for_slate`**, **`mlb_get_probable_pitchers`**. **Any Classic slate
   variant is buildable** — `slate_type` accepts `early`, `main`, `night`, `turbo`,
