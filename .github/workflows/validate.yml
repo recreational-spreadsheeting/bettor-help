@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v6
         with:
@@ -25,3 +27,9 @@ jobs:
 
       - name: Check -dev plugins are in sync with canonical plugins
         run: node scripts/gen-dev-plugin.mjs --check
+
+      - name: Require version bump when plugin content changes (PRs)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags origin ${{ github.base_ref }}
+          node scripts/check-version-bump.mjs origin/${{ github.base_ref }}

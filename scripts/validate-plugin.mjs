@@ -44,6 +44,23 @@ if (!existsSync(marketplacePath)) {
         if (!p.name) fail(marketplacePath, `${where}: missing name`);
         if (!p.source) fail(marketplacePath, `${where}: missing source`);
         if (!p.version) fail(marketplacePath, `${where}: missing version`);
+        // Marketplace version must match the plugin's own manifest — a bump
+        // in one place but not the other ships a stale update signal.
+        if (p.version && typeof p.source === "string" && p.source.startsWith("./")) {
+          const manifestPath = join(ROOT, p.source, ".claude-plugin", "plugin.json");
+          if (existsSync(manifestPath)) {
+            try {
+              const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+              if (manifest.version && manifest.version !== p.version)
+                fail(
+                  marketplacePath,
+                  `${where}: version ${p.version} != ${p.source} plugin.json version ${manifest.version}`,
+                );
+            } catch {
+              // plugin.json parse errors are reported by the per-plugin pass
+            }
+          }
+        }
       });
     }
     if (errors.length === 0)
