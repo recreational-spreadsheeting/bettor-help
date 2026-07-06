@@ -164,7 +164,7 @@ As first pitch approaches, lineups firm up (scratches, confirmed lineups, weathe
 
 Once contests settle, run the **`reconcile-contests`** skill. It fetches each entered
 contest's standings **with your DK cookie on your machine**, then:
-- pushes the **user-free contest field** (per-entry lineup totals = the cash-line
+- pushes the **full contest field** (per-entry lineup totals = the cash-line
   source, + per-player %Drafted) to the **global lake** via `upload_contest_field` —
   feeding `test_profile` cash lines and the ownership corpus, and
 - records **your own** entries + results to your per-user plane, computing P&L

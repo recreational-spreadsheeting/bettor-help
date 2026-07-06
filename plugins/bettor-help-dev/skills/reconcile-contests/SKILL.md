@@ -5,10 +5,10 @@ description: Reconcile settled DraftKings contests after they close — fetch st
 
 # Reconcile contests — fetch standings, upload the field
 
-The cloud **never** fetches DraftKings. Contest standings are cookie-authed and tied to your DK login, so the fetch runs on your machine. After contests settle, you run this once per session: fetch each entered contest's standings, push the **user-free field** (cash-line source + per-player %Drafted) to the shared lake via `upload_contest_field`, and record your own entries/results.
+The cloud **never** fetches DraftKings. Contest standings are cookie-authed and tied to your DK login, so the fetch runs on your machine. After contests settle, you run this once per session: fetch each entered contest's standings, push the **full contest field** (every entry row, usernames kept — the cash-line source + per-player %Drafted) to the shared lake via `upload_contest_field`, and record your own entries/results.
 
 Two planes, one fetch:
-- **Global lake** (user-free, shared): the per-contest field → `upload_contest_field`. Feeds `test_profile` cash lines + ownership priors.
+- **Global lake** (shared): the full per-contest field → `upload_contest_field`. Entry rows keep their `EntryName` verbatim — these are public DK usernames and the grouping key for multi-entry users. Feeds `test_profile` cash lines + ownership priors.
 - **Per-user plane** (yours only): your entries + results → `save_entries` / `update_results`.
 
 Note: `upload_contest_field` is **MLB only** today. It rejects non-DK `site` values and non-MLB sports. The per-user `update_results` works for any sport.
