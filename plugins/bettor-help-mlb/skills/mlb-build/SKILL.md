@@ -103,7 +103,7 @@ Near lock, re-run `build_for_dg` for the same draft group to get fresh confirmed
 
 ### After settle — reconcile
 
-Once contests settle, run the **`reconcile-contests`** skill: it fetches each entered contest's standings with your DK cookie on your machine, pushes the user-free contest field to the global lake via `upload_contest_field` (cash lines + ownership corpus), and records your own entries + results attributed to the `profile_version` you stamped at `ingest_entries`.
+Once contests settle, run the **`reconcile-contests`** skill: it fetches each entered contest's standings with your DK cookie on your machine, pushes the full contest field (usernames kept) to the global lake via `upload_contest_field` (cash lines + ownership corpus), and records your own entries + results attributed to the `profile_version` you stamped at `ingest_entries`.
 
 ### Predicted starters belong in the build pool
 

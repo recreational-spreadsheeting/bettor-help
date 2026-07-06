@@ -59,6 +59,6 @@ When you didn't enter a slate but want to know what you would have scored:
 
 ## Upload the field to the shared lake
 
-The standings you fetch also feed the global shared data. After scoring, run the **`reconcile-contests`** skill to push the user-free per-contest field (cash-line source + per-player %Drafted) to the cloud via the `upload_contest_field` MCP tool. Your own entries and results go to the per-user plane via `save_entries` / `update_results`.
+The standings you fetch also feed the global shared data. After scoring, run the **`reconcile-contests`** skill to push the full per-contest field (cash-line source + per-player %Drafted, usernames kept) to the cloud via the `upload_contest_field` MCP tool. Your own entries and results go to the per-user plane via `save_entries` / `update_results`.
 
 See the **`reconcile-contests`** skill for the complete upload flow.

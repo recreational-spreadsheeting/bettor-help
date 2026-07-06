@@ -144,7 +144,7 @@ Two build **tools**, plus **prompts** that orchestrate them:
 - **`log_contest_result`** / **`update_results`** — record YOUR outcomes to the per-user
   plane (then score per the `dfs-results` skill). `update_results` is cookie-free (public DK
   payout API).
-- **`upload_contest_field`** — push the **user-free** per-contest field (every entry's
+- **`upload_contest_field`** — push the **full** per-contest field (every entry's
   lineup total = the cash-line source, + per-player %Drafted) to the **global** lake. This
   is the client-side path for cookie-authed contest standings: the cloud never fetches
   DraftKings, so you fetch standings on your machine and upload the field here. Idempotent
