@@ -100,7 +100,7 @@ Records the lineups you uploaded (at reserve time; idempotent — call it at upl
 update_results(date="2026-06-28", standings_map={"<contest_id>": "<standings-csv-text>"})
 ```
 
-Reconciles your rank, score, and payout using the DK public payout API (no cookie needed). See the **`dfs-results`** skill for the manual-winnings path when a payout cache is absent.
+Reconciles your rank, score, and payout using the DK public payout API (no cookie needed). A contest whose payout tiers can't be fetched is skipped and left pending — re-run later; nothing is ever recorded as $0 winnings by default.
 
 ### 6. Full reconcile shortcut
 

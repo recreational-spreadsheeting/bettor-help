@@ -13,7 +13,7 @@
       "name": "bettor-help",
       "source": "./plugins/bettor-help",
       "description": "Multi-sport DFS lineup builder and optimizer. Build daily fantasy lineups for MLB and more.",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "author": {
         "name": "Court Schuett"
       },
@@ -31,7 +31,7 @@
       "name": "bettor-help-dev",
       "source": "./plugins/bettor-help-dev",
       "description": "[DEV CHANNEL \u2014 points at the dev environment, for testing] Multi-sport DFS lineup builder and optimizer. Build daily fantasy lineups for MLB and more.",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "author": {
         "name": "Court Schuett"
       },
