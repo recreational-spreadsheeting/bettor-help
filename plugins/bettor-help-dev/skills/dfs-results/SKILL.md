@@ -9,6 +9,18 @@ How to score and reconcile DraftKings DFS contest results faithfully: the headli
 
 **Always pull the data first.** Never narrate outcomes from session memory or an unverified ingest.
 
+## Entries come from DK, not local artifacts
+
+"What did I enter last night" is answered by **DK's entry history**, never by local files. The one-command path:
+
+```
+bettor-help daily-capture --date <YYYY-MM-DD> --sport mlb --fetch
+```
+
+`--fetch` pulls your entry history straight from DK via your cookie session, fetches standings for each entered contest, uploads the field, and reconciles results — see the **`reconcile-contests`** skill.
+
+Local `DKEntries*.csv` exports, build outputs, and edit-entries overlays are **pre-lock intentions**: they show what was uploaded or planned at some moment, not what was live at lock. Entries get added, canceled, and swapped after any export. Never assert contest counts, entry fees, or "you had N entries across M slates" from local artifacts — if the live DK pull is unavailable, say so and stop; do not substitute a weaker source silently.
+
 ## Dollar-ROI is the headline metric
 
 Report performance as **dollar ROI = (total winnings − total cost) / total cost**, on actual winnings. Never lead with "X/Y cashed" or a cash-count %:
