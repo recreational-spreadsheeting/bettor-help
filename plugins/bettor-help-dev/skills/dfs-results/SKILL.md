@@ -30,17 +30,19 @@ Report performance as **dollar ROI = (total winnings − total cost) / total cos
 
 Cash-count % can be a secondary color stat, never the headline.
 
-## DK payout API is ground truth
+## Winnings are actual DK dollars — trust the report
 
-The DK payout API (`results-by-user` endpoint) returns true rank/score/payout/cashed per contest and requires no cookie. It is ground truth for whether you cashed.
+Recorded winnings come straight from DraftKings on every path: `daily-capture --fetch` writes each entry's real winnings from DK's own entry-history ledger, and `update_results` computes payouts live from the DK public payout API (a contest whose tiers can't be fetched is **skipped and left pending**, never recorded as $0). There is no local payout cache anywhere in the pipeline, so a $0 day in the report is a real $0 day — report it plainly.
 
-A common ingest failure mode: when a contest has no cached payout structure, the ingest logs $0 winnings and the P&L is wrong (can be off by $100+ on a single day). Double-Ups often have no cached payout, so any ingest that depends on a local payout cache will under-report cashing.
-
-**Use `update_results` (the MCP tool)** — it calls the DK public payout API directly, no cookie needed, and writes accurate winnings to the per-user plane.
+**Use `update_results` (the MCP tool)** to reconcile pending entries — it calls the DK public payout API directly, no cookie needed, and writes accurate winnings to the per-user plane.
 
 ```
 update_results(date="2026-06-28", standings_map={"contest_id": "<standings-csv-text>"})
 ```
+
+## Report the numbers; don't editorialize the strategy
+
+Cash play intentionally repeats a small number of lineups across many Double-Ups on the same slates — correlated wins and losses per slate are the **intended structure**, not a caveat. Never soften or qualify a result with observations like "these were repeated lineups so they missed together." State the dollar ROI and move on.
 
 ## Grep our entry FIRST in standings
 
