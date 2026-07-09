@@ -61,6 +61,8 @@ The matching row shows your rank, actual score, and the actual scored lineup. Do
 
 After logging, you can review your recorded history for dollar-ROI across slates.
 
+If entries show up under `unattributed` instead of a named profile, see **`reconcile-contests`**'s "Recovering unattributed entries" section — the evening stamp was missed and needs a re-stamp + re-capture.
+
 ## Score an un-entered slate (via a large GPP field)
 
 When you didn't enter a slate but want to know what you would have scored:
