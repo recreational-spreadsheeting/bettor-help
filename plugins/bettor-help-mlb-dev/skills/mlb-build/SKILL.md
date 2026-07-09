@@ -36,7 +36,7 @@ Key knobs from the MLB catalog (see **`profiles`** for the full list):
 | Knob | Floor-oriented tuning | Ceiling-oriented tuning |
 |------|----------------------|------------------------|
 | `objective` | `cash_field_match` or `cash_p60_floor` | `ceiling` or `leverage_ceiling` |
-| `ownership_source` | `auto` (size-gated default) | `auto` or `vendor` |
+| `ownership_source` | `auto` (size-gated default) | `auto` or `stokastic` |
 | `min_cash_ownership` | Positive value to anchor on chalk | `0.0` (no floor) |
 | `max_hitters_per_team` | `3` (default) | `4` or `5` for stacking |
 | `max_exposure` | `0.60` (default) | Lower (e.g. `0.30`) for more diversity |
