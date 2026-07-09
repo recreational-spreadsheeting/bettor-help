@@ -71,11 +71,17 @@ All knobs live in `defaults` (apply every build) or `rules.resolution` (apply co
 
 ### Ownership sources
 
+These are the only values `ownership_source` accepts (anything else fails
+validation):
+
 - `auto` — size-gated default: picks the appropriate source based on the slate's game count. Recommended as the default.
-- `rank_vendor` — uses the vendor's ownership ranking (stronger signal on large slates).
-- `vendor` — raw vendor ownership percentage.
-- `ours` — our model's ownership estimate.
-- `calibrated` — calibrated ownership estimate.
+- `stokastic` — raw vendor ownership percentage.
+- `ours` — our calibrated cash-model ownership.
+- `stokastic_cash_calibrated` — the vendor number passed through the learned cash calibration (needs vendor coverage — see `min_vendor_own_coverage` below).
+- `rank_vendor` — the vendor's ownership ranking (stronger signal on large slates).
+- `field_rank_pctile` — percentile rank against the field corpus.
+- `ours_field` — our model's field-ownership estimate.
+- `vendor_rank_our_level` — vendor rank ordering at our model's levels.
 
 ## Ownership gates — `min_vendor_own_coverage` and `allow_zero_ownership_build`
 
