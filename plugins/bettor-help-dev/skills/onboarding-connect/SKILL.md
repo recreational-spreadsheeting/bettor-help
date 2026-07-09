@@ -20,9 +20,15 @@ If they're NOT set up yet (no CLI, not signed in), the fastest path is the singl
 command — have them run it in their terminal, then come back:
 
 ```
-npm install -g @bettor-help/cli   # one-time; needs Node 20+
-bettor-help start                 # creates ~/bettor-help, enables the plugins, signs in
-cd ~/bettor-help && claude        # reopen Claude Code here
+curl -fsSL https://get.bettor.help | sh   # macOS/Linux, one-time
+bettor-help start                         # creates ~/bettor-help, enables the plugins, signs in
+cd ~/bettor-help && claude                # reopen Claude Code here
+```
+
+On Windows (PowerShell):
+
+```
+irm https://get.bettor.help/install.ps1 | iex
 ```
 
 ## 1. Confirm they're signed in
@@ -69,8 +75,9 @@ to build again, switch sports, see results (`dfs-results`), or reconcile contest
 
 ## If something's off
 
-- **`bettor-help` not found** — Node isn't installed or the npm global bin isn't on
-  PATH. Check `node --version` (need 20+); reopen the terminal after installing.
+- **`bettor-help` not found** — the installer puts it in `~/.local/bin` (macOS/Linux) or
+  `%LOCALAPPDATA%\bettor-help` (Windows); make sure that's on your PATH, or reopen your
+  terminal. To update: `bettor-help update`.
 - **"Not signed in" / token expired** — `bettor-help login` again.
 - **MLB tools missing after `start_sport_session`** — re-list tools in the client;
   if still missing, the subscription may not cover the sport (`subscription_required`).
