@@ -50,6 +50,8 @@ All knobs live in `defaults` (apply every build) or `rules.resolution` (apply co
 | `floor_salary_exempt` | Salary above which the floor rule is waived | `5000` |
 | `min_cash_ownership` | Hitters below this projected cash ownership are dropped | `0.0` |
 | `min_sp_ownership` | SPs below this projected ownership are dropped | `1.0` |
+| `min_vendor_own_coverage` | Fraction of the pool that must carry a vendor ownership number to build | `0.95` |
+| `allow_zero_ownership_build` | Build even when the whole pool resolves to zero ownership | `false` |
 | `sp_rank_top` | Restrict SP pool to top-N by rank (0 = no limit) | `5` |
 | `cash_floor_percentile` | Percentile of simulated score used for cash floor objectives | `25.0` |
 | `cash_mc_draws` | Monte-Carlo draws for cash percentile objectives | `1000` |
@@ -69,11 +71,40 @@ All knobs live in `defaults` (apply every build) or `rules.resolution` (apply co
 
 ### Ownership sources
 
+These are the only values `ownership_source` accepts (anything else fails
+validation):
+
 - `auto` — size-gated default: picks the appropriate source based on the slate's game count. Recommended as the default.
-- `rank_vendor` — uses the vendor's ownership ranking (stronger signal on large slates).
-- `vendor` — raw vendor ownership percentage.
-- `ours` — our model's ownership estimate.
-- `calibrated` — calibrated ownership estimate.
+- `stokastic` — raw vendor ownership percentage.
+- `ours` — our calibrated cash-model ownership.
+- `stokastic_cash_calibrated` — the vendor number passed through the learned cash calibration (needs vendor coverage — see `min_vendor_own_coverage` below).
+- `rank_vendor` — the vendor's ownership ranking (stronger signal on large slates).
+- `field_rank_pctile` — percentile rank against the field corpus.
+- `ours_field` — our model's field-ownership estimate.
+- `vendor_rank_our_level` — vendor rank ordering at our model's levels.
+
+## Ownership gates — `min_vendor_own_coverage` and `allow_zero_ownership_build`
+
+Two knobs guard a build against thin or missing ownership. Both live in `defaults`.
+
+### `min_vendor_own_coverage` (default `0.95`)
+
+Applies only when `ownership_source` needs the vendor (`stokastic`, `stokastic_cash_calibrated`). It sets the fraction of the pool that must carry a vendor ownership number. The behavior is **drop-vs-refuse**:
+
+- **At or above the floor** — the players missing a vendor number are dropped and the build proceeds on the covered players. The drop is recorded in the build's filter ledger as a `vendor_own_coverage` entry (with the `min_vendor_own_coverage` and `ownership_source` it ran under, and how many pitchers/hitters it removed). Check the ledger to see how much of the pool was cut.
+- **Below the floor** — the build refuses instead of running on a mostly-uncovered pool. The refusal reads `build refused: ...` and names the coverage number it saw.
+
+**Lower the floor for early-day builds.** The vendor fills in ownership over the course of the day; a morning build can sit below `0.95` simply because coverage has not accumulated yet. If a build refuses with a coverage number that's close to full, lower `min_vendor_own_coverage` (e.g. to `0.60`) to build on what's covered — or wait for coverage to fill and build later. Restore the default once coverage is complete.
+
+### `allow_zero_ownership_build` (default `false`)
+
+When the entire resolved pool comes back at `0.0` ownership **and** ownership knobs are active (`min_cash_ownership`, `min_sp_ownership`, and the ownership caps), the build refuses rather than optimizing with no ownership signal. The refusal reads:
+
+```
+build refused: zero-ownership gate: all <N> pool players resolved to 0.0 ownership (ownership_source='<source>') while ownership knobs are active (<knob=value list>). Refusing to build blind — fix the ownership feed, or set allow_zero_ownership_build=true to override.
+```
+
+**Operator response:** treat this as a stop sign — fix the ownership feed (re-check freshness, confirm the vendor source is live) and rebuild. Set `allow_zero_ownership_build: true` only when you deliberately want a build with no ownership input.
 
 ## Tuning heuristics
 

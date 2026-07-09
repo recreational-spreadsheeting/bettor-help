@@ -13,7 +13,7 @@
       "name": "bettor-help",
       "source": "./plugins/bettor-help",
       "description": "Multi-sport DFS lineup builder and optimizer. Build daily fantasy lineups for MLB and more.",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "author": {
         "name": "Court Schuett"
       },
@@ -31,7 +31,7 @@
       "name": "bettor-help-dev",
       "source": "./plugins/bettor-help-dev",
       "description": "[DEV CHANNEL \u2014 points at the dev environment, for testing] Multi-sport DFS lineup builder and optimizer. Build daily fantasy lineups for MLB and more.",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "author": {
         "name": "Court Schuett"
       },
@@ -48,7 +48,7 @@
       "name": "bettor-help-mlb",
       "source": "./plugins/bettor-help-mlb",
       "description": "MLB-specific DFS lineup builder. Projections, stacking, ownership modeling, and optimizer for MLB daily fantasy.",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": {
         "name": "Court Schuett"
       },
@@ -66,7 +66,7 @@
       "name": "bettor-help-mlb-dev",
       "source": "./plugins/bettor-help-mlb-dev",
       "description": "[DEV CHANNEL \u2014 points at the dev environment, for testing] MLB-specific DFS lineup builder. Projections, stacking, ownership modeling, and optimizer for MLB daily fantasy.",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": {
         "name": "Court Schuett"
       },
