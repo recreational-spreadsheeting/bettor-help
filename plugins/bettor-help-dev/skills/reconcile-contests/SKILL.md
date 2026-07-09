@@ -110,6 +110,20 @@ bettor-help reconcile --sport mlb --date 2026-06-28 --contest-id <id> [--contest
 
 Fetches standings for the given contests (with per-contest delays), builds the payload, and uploads the global half. Without `--contest-id` it falls back to discovering the live lobby — fine pre-lock, but for a settled slate pass explicit IDs or use `daily-capture`, which resolves them from your DK entry history.
 
+## Recovering unattributed entries
+
+If `daily-capture` reports `⚠️ N UNATTRIBUTED`, the evening stamp was missed for those
+entries. Recover it (both commands are idempotent — safe to re-run):
+
+1. Locate the DKEntries export for that slate (`~/bettor-help/<date>/entries/DKEntries-dg<dg>.csv`,
+   or the original in Downloads).
+2. Stamp it: `bettor-help entries --profile <name@ver> --dg <draft_group_id>`
+3. Re-run: `bettor-help daily-capture --date <date> --sport mlb` — the reconcile now inherits
+   the profile from the freshly stamped seed.
+
+Confirm with `get_results_report` — the `per_profile` bucket should no longer show the entries
+under `unattributed`.
+
 ## Cross-references
 
 - **`dfs-results`** — scoring, dollar-ROI, and the standings-fetch techniques this skill builds on.

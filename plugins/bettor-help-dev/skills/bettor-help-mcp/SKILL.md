@@ -29,12 +29,15 @@ mechanics, timings, the late-swap doctrine, and a worked call sequence — is in
    are USER-owned; `recommend_profile(format, games)` suggests by slate size.
 3. **Enter on DK.** Upload `dk_upload_csv` via DK's bulk **Upload Lineups**, then
    export **DKEntries.csv** from the contest's Edit Entries page (one per draft group).
-4. **Track.** `ingest_entries(dg, slate_date, dk_entries_csv=<export>,
-   profile_version="cash@1")` records every entry to the cloud ledger — or, on
-   **CLI 0.1.3+**, run `bettor-help entries` to scan `~/Downloads` for the export,
-   archive it under today's folder, and ingest it in one step (`--file`/`--dg`/`--profile`
-   flags to be explicit). The cloud NEVER contacts DK — your exports are the bridge
-   (privacy by design).
+4. **Track, then STAMP (required for attribution).** Immediately after export, record
+   it to the cloud ledger with the profile that built it:
+
+       bettor-help entries --profile <name@ver> --dg <draft_group_id>
+
+   (`--profile` is what stamps it; without it the entries land unattributed and no
+   morning reconcile can recover the profile. Equivalent raw call:
+   `ingest_entries(dg, slate_date, dk_entries_csv=<export>, profile_version="<name@ver>")`.)
+   The cloud NEVER contacts DK — your exports are the bridge (privacy by design).
 5. **Near lock, late-swap.** Re-run `build_for_dg` for fresh confirmed lineups; if
    players changed, `export_edit_entries(dg, new_lineup_csv=<fresh dk_upload_csv>)`
    returns a DK Edit-Entries CSV of ONLY the changed entries, overlaid onto existing

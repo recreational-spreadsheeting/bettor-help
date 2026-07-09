@@ -62,7 +62,11 @@ Key knobs from the MLB catalog (see **`profiles`** for the full list):
 
 7. **Validate starters** — every rostered SP must be a confirmed or predicted starter. Verify each SP against MLB official probables before uploading. A `predicted_starting` status is not proof the player is pitching — cross-check the MLB Stats API. A 0-point SP score means the player started and did poorly; it does not mean a scratch.
 
-8. **Enter on DK, then track** — upload `dk_upload_csv` via DK's bulk **Upload Lineups**, then export **DKEntries.csv** from the contest's Edit Entries page (one per draft group; it lands in `~/Downloads` — hand it to Claude, or on **CLI 0.1.3+** run `bettor-help entries` to scan Downloads → archive → ingest yourself). Record it to the cloud ledger: `ingest_entries(dg=<draft_group_id>, slate_date=<today>, dk_entries_csv=<export>, profile_version="cash@1")`. The `profile_version` stamp is what attributes results back to the exact config you ran. The cloud never contacts DK — your export is the bridge.
+8. **Enter on DK, then STAMP (required for attribution).** Upload `dk_upload_csv` via DK's bulk **Upload Lineups**, then export **DKEntries.csv** from the contest's Edit Entries page (one per draft group; it lands in `~/Downloads`). Immediately record it to the cloud ledger with the profile that built it — this is what makes tonight's results attributable:
+
+       bettor-help entries --profile <name@ver> --dg <draft_group_id>
+
+   (`--profile` is what stamps it; without it the entries land unattributed and no morning reconcile can recover the profile. Run once per dg. Equivalent raw call: `ingest_entries(dg=<draft_group_id>, slate_date=<today>, dk_entries_csv=<export>, profile_version="<name@ver>")`.) The cloud never contacts DK — your export is the bridge.
 
 ## Operational invariants (non-negotiable)
 
