@@ -101,6 +101,15 @@ Near lock, re-run `build_for_dg` for the same draft group to get fresh confirmed
 
 **Never delete and re-enter to change a lineup — that forfeits the slot.** Late-swap edits the entry in place. Run `late_swap_check` to flag late-swap exposure across entries before lock.
 
+### Ownership refusals — read the message, don't override blindly
+
+A build can refuse with `build refused: ...` when ownership is missing or thin. Two shapes:
+
+- **Zero-ownership gate** — `build refused: zero-ownership gate: all <N> pool players resolved to 0.0 ownership ...`. The whole pool came back with no ownership while ownership knobs are active. Do not force it: re-check freshness (`mlb_get_freshness`), confirm the ownership source is live, and rebuild. Only set `allow_zero_ownership_build: true` in the profile when you deliberately want a build with no ownership input.
+- **Vendor coverage floor** — the build refuses and names a coverage number below `min_vendor_own_coverage` (default `0.95`). On an early-day build the vendor may not have covered the slate yet. Either build later once coverage fills, or lower `min_vendor_own_coverage` in the profile (e.g. `0.60`) to build on the covered players. When coverage is at/above the floor, the uncovered players are dropped silently-but-logged — a `vendor_own_coverage` entry in the build's filter ledger records how many were cut; check it if the pool looks light.
+
+See the **`profiles`** skill for the full drop-vs-refuse semantics of both knobs.
+
 ### After settle — reconcile
 
 Once contests settle, run the **`reconcile-contests`** skill: it fetches each entered contest's standings with your DK cookie on your machine, pushes the full contest field (usernames kept) to the global lake via `upload_contest_field` (cash lines + ownership corpus), and records your own entries + results attributed to the `profile_version` you stamped at `ingest_entries`.
