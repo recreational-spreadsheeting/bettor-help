@@ -14,7 +14,6 @@
   ],
   "permissions": {
     "allow": [
-      "Bash(node --version)",
       "Bash(git --version)",
       "Bash(uname:*)",
       "Bash(ls:*)",

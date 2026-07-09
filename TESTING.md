@@ -24,81 +24,23 @@ parts that need your DraftKings login.
 
 ### What you'll need
 
-Before you start, make sure you have (or can get) all four of these:
+Before you start, make sure you have (or can get) all three of these:
 
 1. **Claude Code** — Anthropic's assistant, installed on your computer or used at
    [claude.ai](https://claude.ai). If you do not have it yet, install it from
    [claude.com/claude-code](https://www.claude.com/product/claude-code) and sign in. This
    guide assumes you can already open Claude Code and type messages to it.
-2. **Node.js** — a free program that lets your computer run the bettor-help CLI. We
-   install it in Step 2 below. (You do *not* need to know what it is — just install it.)
-3. **A bettor.help subscription** — an account at [bettor.help](https://bettor.help) with
+2. **A bettor.help subscription** — an account at [bettor.help](https://bettor.help) with
    an active subscription. **Anyone can install the plugin, but only a paid subscriber can
    actually build lineups.** If you try to build without a subscription, the tool will
    reply with `subscription_required`. Sign up first.
-4. **A DraftKings account** — a normal DK account that you log into in your web browser.
-   You will play your lineups there, and one optional step (reconcile, Step 6) reads your
+3. **A DraftKings account** — a normal DK account that you log into in your web browser.
+   You will play your lineups there, and one optional step (reconcile, Step 5) reads your
    DK login so it can pull contest results.
 
 ---
 
-## 2. Install Node.js
-
-Node.js is the engine that runs the bettor-help CLI. You install it once.
-
-### On Windows
-
-1. Open your web browser and go to **[nodejs.org](https://nodejs.org)**.
-2. Click the big button labeled **"LTS"** (it will say something like *"20.x.x LTS —
-   Recommended For Most Users"*). This downloads an installer file
-   (`node-vXX.X.X-x64.msi`) to your **Downloads** folder.
-   > **Important:** bettor-help requires Node version **20 or newer**. The "LTS" button
-   > always gives you a recent enough version, so just use that.
-3. Double-click the downloaded `.msi` file to start the installer.
-4. Click **Next** through the screens. **Accept the license**, keep the default install
-   location, and **leave every checkbox at its default** — in particular, make sure
-   *"Add to PATH"* stays checked (it is by default). PATH is just a list your computer
-   uses to find programs; leaving this checked is what lets you type `node` later.
-5. Click **Install**. Windows may pop up a box asking *"Do you want to allow this app to
-   make changes to your device?"* — click **Yes**.
-6. When it finishes, click **Finish**.
-7. **Now open a terminal so you can check it worked.** The terminal (also called
-   "PowerShell") is a window where you type commands. To open it:
-   - Click the **Start** menu (Windows logo, bottom-left).
-   - Type **`PowerShell`**.
-   - Click **Windows PowerShell** in the results.
-   - A dark window with a blinking cursor appears. This is your terminal.
-   > **Why a *new* terminal?** Installing Node updates your PATH, but windows that were
-   > already open won't see the change. Always open a fresh PowerShell window *after*
-   > installing.
-8. In that PowerShell window, type the following and press **Enter**:
-   ```powershell
-   node --version
-   ```
-   You should see something like `v20.11.1`. If you see a version number that starts with
-   `v20` or higher, Node is installed correctly. (If you instead see a red error like
-   *"node is not recognized"*, see **Troubleshooting** at the bottom.)
-
-### On Mac
-
-1. The easiest route is **[Homebrew](https://brew.sh)** (a package manager for Mac). Open
-   **Terminal** (press `Cmd + Space`, type `Terminal`, press Enter), then run:
-   ```zsh
-   brew install node
-   ```
-   If you do not have Homebrew, install it first with the one-line command on
-   [brew.sh](https://brew.sh), then run the line above.
-2. **No Homebrew, no problem** — alternatively download the **LTS** installer (`.pkg`)
-   from [nodejs.org](https://nodejs.org) and double-click it.
-3. Verify it worked. In Terminal, run:
-   ```zsh
-   node --version
-   ```
-   You should see `v20.x.x` or higher. bettor-help requires Node **20 or newer**.
-
----
-
-## 3. Install the plugin (inside Claude Code)
+## 2. Install the plugin (inside Claude Code)
 
 The "plugin" is what teaches Claude Code about bettor.help. You install it by typing a few
 commands **into the Claude Code chat box itself** — these are not terminal commands. Type
@@ -132,26 +74,35 @@ see bettor-help skills in the list (such as `onboarding-connect`, `profiles`, an
 
 ---
 
-## 4. Install and sign in to the CLI
+## 3. Install and sign in to the CLI
 
 The **CLI** ("command-line interface") is the small companion program that runs on your
 own computer. It handles signing in and, later, reading your DraftKings results. You
-install it from the terminal using `npm`, a tool that came with Node.js in Step 2.
+install it with a single one-line command — no Node.js or other language runtime
+required, it just downloads the `bettor-help` program straight to your computer.
 
 ### Install it
 
-Run this in your terminal (**PowerShell** on Windows, **Terminal** on Mac):
+**On Mac (or Linux)**, run this in **Terminal**:
 
-```powershell
-npm install -g @bettor-help/cli
+```zsh
+curl -fsSL https://get.bettor.help | sh
 ```
 
-The `-g` means "install globally" so you can run it from anywhere. This downloads a few
-files and finishes in under a minute.
+**On Windows**, run this in **PowerShell**:
+
+```powershell
+irm https://get.bettor.help/install.ps1 | iex
+```
+
+Either command downloads the `bettor-help` program and puts it on your PATH. It finishes
+in a few seconds.
 
 > **On Windows — if you later get "bettor-help is not recognized":** this is a PATH
 > issue. Close PowerShell and open a **new** PowerShell window, then try again. See
 > Troubleshooting if it persists.
+>
+> **To update later:** run `bettor-help update` any time.
 
 ### Sign in
 
@@ -191,7 +142,7 @@ This prints the account you're signed in as.
 
 ---
 
-## 5. First run — connect, pick MLB, and create your first profile
+## 4. First run — connect, pick MLB, and create your first profile
 
 Everything from here happens **inside Claude Code** by chatting with it. The plugin
 provides "skills" — guided walkthroughs — that you trigger by name.
@@ -218,7 +169,7 @@ provides "skills" — guided walkthroughs — that you trigger by name.
 
 ---
 
-## 6. The daily loop — build, enter, reconcile, results
+## 5. The daily loop — build, enter, reconcile, results
 
 Once you're set up, your everyday routine is four steps. Each is a Claude Code skill you
 trigger by name; just chat with Claude and follow along.
@@ -305,17 +256,17 @@ Cowork) instead of the Claude Code app:
 - Add the bettor.help **MCP connector** using the URL **`https://mcp.bettor.help`** and
   sign in with your bettor.help account.
 - You can **build lineups** this way **without installing the local CLI**.
-- **However, the reconcile step (Step 6c) still needs the local CLI and DraftKings
+- **However, the reconcile step (Step 5c) still needs the local CLI and DraftKings
   cookie**, because pulling the DK contest field runs on your own computer. So even on
-  claude.ai, install the CLI (Steps 2 & 4) if you want results reconciled.
+  claude.ai, install the CLI (Step 3) if you want results reconciled.
 
 We recommend **Claude Code as the primary surface** for testing.
 
 ---
 
-## 7. Troubleshooting
+## 6. Troubleshooting
 
-**Start with the doctor (CLI 0.1.3+).** One command checks everything below — Node,
+**Start with the doctor (CLI 0.1.3+).** One command checks everything below —
 sign-in, subscription, DK cookie, server reachability, home folder — with a fix hint for
 anything that's wrong:
 
@@ -325,18 +276,20 @@ bettor-help doctor
 
 If you file a bug report, paste the doctor output — it answers most of our questions.
 
-### "command not found" / "bettor-help is not recognized" / "node is not recognized"
+### "command not found" / "bettor-help is not recognized"
 
 The program is installed but your terminal can't find it yet — almost always a PATH issue.
 
 - **First fix (both OSes):** close your terminal completely and open a **brand-new**
   window, then try again. Newly installed programs are only visible in terminals opened
   *after* the install.
-- **On Windows:** confirm Node installed with `node --version`. If *that* fails too,
-  re-run the Node.js installer from Step 2 and make sure **"Add to PATH"** is checked.
-- **On Mac:** if `npm install -g` succeeded but `bettor-help` isn't found, your npm global
-  folder may not be on PATH. Run `npm config get prefix` to see the folder; with Homebrew
-  Node this is usually already on PATH, so opening a fresh Terminal normally fixes it.
+- **On Mac/Linux:** the installer puts `bettor-help` in `~/.local/bin`. Make sure that
+  folder is on your PATH (most shells pick it up automatically); if not, open a fresh
+  Terminal window and try again.
+- **On Windows:** the installer puts `bettor-help` in `%LOCALAPPDATA%\bettor-help`. Make
+  sure that folder is on your PATH, then open a fresh PowerShell window and try again.
+- **Either OS:** if it's still not found, re-run the install command from Step 3.
+- **To update to the latest version any time:** `bettor-help update`.
 
 ### The browser didn't open during `bettor-help login`
 
@@ -367,7 +320,7 @@ confirm which account you're signed in as with `bettor-help whoami`.)
 ### Plugin commands don't show up in Claude Code
 
 Run `/reload-plugins` again. If they still don't appear, re-run the install commands from
-Step 3 in order, then `/reload-plugins` once more. Make sure you typed
+Step 2 in order, then `/reload-plugins` once more. Make sure you typed
 `bettor-help@bettor-help` (the part after `@` is the marketplace name and is required).
 
 ### Windows Firewall blocked the sign-in
@@ -385,7 +338,7 @@ or switch to `--login` and stop thinking about it.)
 
 ---
 
-## 8. Getting help
+## 7. Getting help
 
 You're an early tester, so **bug reports and rough edges are exactly what we want.** When
 something doesn't work:

@@ -42,7 +42,18 @@ or for the MLB-specific plugin:
 ### Step 4 — Authenticate
 
 ```
-npm install -g @bettor-help/cli
+curl -fsSL https://get.bettor.help | sh   # macOS/Linux
+```
+
+On Windows (PowerShell):
+
+```
+irm https://get.bettor.help/install.ps1 | iex
+```
+
+Then:
+
+```
 bettor-help login
 ```
 
