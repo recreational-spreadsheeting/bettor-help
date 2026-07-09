@@ -116,14 +116,23 @@ rate on ≤7-game slates. The winning posture: `auto` on ≤7g, `rank_vendor` on
 
 ---
 
-## Track — record every entry to the cloud ledger
+## Track — record every entry to the cloud ledger, STAMPED (required for attribution)
+
+Immediately after export, record it with the profile that built it:
+
+```
+bettor-help entries --profile <name@ver> --dg <draft_group_id>
+```
+
+`--profile` is what stamps it; without it the entries land unattributed and no morning
+reconcile can recover the profile. Equivalent raw call:
 
 ```
 ingest_entries(
     dg=<draft_group_id>,
     slate_date=<today>,
     dk_entries_csv=<the DKEntries.csv export text>,
-    profile_version="cash@1",
+    profile_version="<name@ver>",
 )
 ```
 
@@ -202,9 +211,10 @@ build_for_dg(draft_group_id=112233, slate_type="early",
 
 # DK: Upload Lineups with dk_upload_csv → export DKEntries.csv
 
-ingest_entries(dg=112233, slate_date="2026-07-02",
-               dk_entries_csv="<DKEntries.csv text>",
-               profile_version="cash@1")          # → 40/40 players resolved
+bettor-help entries --profile field-match@1 --dg 112233
+# → STAMPED, 40/40 players resolved
+# (equivalent raw call: ingest_entries(dg=112233, slate_date="2026-07-02",
+#  dk_entries_csv="<DKEntries.csv text>", profile_version="field-match@1"))
 
 # Near lock (~12:15 PM ET)
 build_for_dg(draft_group_id=112233, slate_type="early",
