@@ -47,7 +47,7 @@ mechanics, timings, the late-swap doctrine, and a worked call sequence — is in
    `upload_contest_field` to pull standings, compute P&L attributed to the ingested
    `profile_version`, and feed the lake (cash lines + ownership corpus).
 
-**Where files live:** working files go in the visible `~/bettor-help/<YYYY-MM-DD>/{builds,entries,swaps,results}/` (one dir per slate day — `bettor-help day` on **CLI 0.1.3+** creates/opens today's); config (`token.json`, `dk_cookie_header.txt`) stays out of sight in `~/.config/bettor-help/`. See `references/daily-process.md`.
+**Where files live:** working files go in the visible `~/bettor-help/<YYYY-MM-DD>/{builds,entries,swaps,results}/` (one dir per slate day — `bettor-help day` creates/opens today's); config (`token.json`, `dk_cookie_header.txt`) stays out of sight in `~/.bettor-help/`. See `references/daily-process.md`.
 
 - **Auto-updates:** `bettor-help update --set-mode <notify|apply|off>` controls whether the CLI nudges (default), self-updates, or stays quiet. `bettor-help update` updates on demand.
 
