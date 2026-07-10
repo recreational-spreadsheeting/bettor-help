@@ -67,6 +67,17 @@ build_lineups
 Walk through the output with them — what was built and why. This is the payoff;
 make sure they see it land.
 
+## Optional: keep the CLI up to date
+
+The CLI checks for a newer version about once a day and, by default, prints a
+one-line nudge when one's available. If they'd rather it update itself, set:
+
+    bettor-help update --set-mode apply     # auto-update in place
+    bettor-help update --set-mode notify    # just nudge (default)
+    bettor-help update --set-mode off        # never check
+
+They can always update on demand with `bettor-help update`.
+
 ## 5. Hand off
 
 They're onboarded. From here, route via the **`sport-session-orchestrator`** skill

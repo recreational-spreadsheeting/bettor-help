@@ -49,6 +49,8 @@ mechanics, timings, the late-swap doctrine, and a worked call sequence — is in
 
 **Where files live:** working files go in the visible `~/bettor-help/<YYYY-MM-DD>/{builds,entries,swaps,results}/` (one dir per slate day — `bettor-help day` on **CLI 0.1.3+** creates/opens today's); config (`token.json`, `dk_cookie_header.txt`) stays out of sight in `~/.config/bettor-help/`. See `references/daily-process.md`.
 
+- **Auto-updates:** `bettor-help update --set-mode <notify|apply|off>` controls whether the CLI nudges (default), self-updates, or stays quiet. `bettor-help update` updates on demand.
+
 **Timings that matter:** early slates lock ~12:35 PM ET (enter first); main ~7 PM ET
 first-pitch window; night slates can't build until probable SPs post (afternoon).
 Slate data self-serves in the cloud (no manual refresh as of the 1.19.0 cycle); if a
