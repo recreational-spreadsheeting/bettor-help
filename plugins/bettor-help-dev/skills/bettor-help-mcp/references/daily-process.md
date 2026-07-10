@@ -16,7 +16,7 @@ the two. That's privacy by design, not a limitation.
 ## Where your files live
 
 The product's visible home is **`~/bettor-help/`**, one directory per slate day
-(on **CLI 0.1.3+**, `bettor-help day` creates/prints today's folder, `--open` opens it):
+(`bettor-help day` creates/prints today's folder, `--open` opens it):
 
 ```
 ~/bettor-help/<YYYY-MM-DD>/
@@ -34,19 +34,19 @@ The product's visible home is **`~/bettor-help/`**, one directory per slate day
 - **`entries/`** — the **assistant-maintained archive** of your DKEntries exports. You
   don't file these yourself: export from DK as normal (it lands in `~/Downloads`) and
   hand it to Claude — paste the path or just ask ("grab my entries"). Claude ingests it
-  and archives a copy here as `DKEntries-<slate_type>-dg<id>.csv`. On **CLI 0.1.3+**,
-  `bettor-help entries` does the same scan-Downloads → archive → ingest yourself
+  and archives a copy here as `DKEntries-<slate_type>-dg<id>.csv`. `bettor-help entries`
+  does the same scan-Downloads → archive → ingest yourself
   (`--file`/`--dg`/`--profile` to be explicit). **No new habits; Downloads is fine.**
 - **`results/`** — reconcile outputs (standings, computed P&L), also assistant-maintained.
 
 **In short:** `builds/` + `swaps/` are where Claude puts files **you** grab for DK;
 `entries/` + `results/` are archives Claude maintains **for** you.
 
-**Config lives separately, out of sight, in `~/.config/bettor-help/`** — `token.json`
+**Config lives separately, out of sight, in `~/.bettor-help/`** — `token.json`
 (entitlement) and `dk_cookie_header.txt` (your DK cookie — set up once with
-`bettor-help cookie --login` on **CLI 0.1.4+**, then auto-refreshed). These are CLI-managed and
+`bettor-help cookie --login`, then auto-refreshed). These are CLI-managed and
 **never** leave your machine. The rule: **working files are visible
-(`~/bettor-help/`); config is not (`~/.config/bettor-help/`).**
+(`~/bettor-help/`); config is not (`~/.bettor-help/`).**
 
 ---
 

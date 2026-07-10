@@ -136,8 +136,8 @@ bettor-help whoami
 This prints the account you're signed in as.
 
 > **Where your login is stored:** the CLI saves a sign-in token at
-> `~/.config/bettor-help/token.json` on Mac, or
-> `C:\Users\<YourUsername>\.config\bettor-help\token.json` on Windows. You don't need to
+> `~/.bettor-help/token.json` on Mac, or
+> `C:\Users\<YourUsername>\.bettor-help\token.json` on Windows. You don't need to
 > touch this file — `bettor-help login` and `bettor-help logout` manage it for you.
 
 ---
@@ -174,7 +174,7 @@ provides "skills" — guided walkthroughs — that you trigger by name.
 Once you're set up, your everyday routine is four steps. Each is a Claude Code skill you
 trigger by name; just chat with Claude and follow along.
 
-> **Where your files live (CLI 0.1.3+):** everything for a slate day sits in
+> **Where your files live:** everything for a slate day sits in
 > `~/bettor-help/<date>/` — `builds/` (upload-ready CSVs) and `swaps/` are the files you
 > grab for DraftKings; `entries/` and `results/` are archives Claude maintains for you.
 > `bettor-help day --open` creates/opens today's folder. And when you export DKEntries
@@ -204,7 +204,7 @@ After your contests finish, **reconcile** pulls the full contest field from Draf
 bettor.help can score how you did. This is the **one step that needs your DraftKings
 login**, because it reads contest data while logged in as you.
 
-**First, connect your DraftKings login — one command (CLI 0.1.4+):**
+**First, connect your DraftKings login — one command:**
 
 ```powershell
 bettor-help cookie --login
@@ -266,7 +266,7 @@ We recommend **Claude Code as the primary surface** for testing.
 
 ## 6. Troubleshooting
 
-**Start with the doctor (CLI 0.1.3+).** One command checks everything below —
+**Start with the doctor.** One command checks everything below —
 sign-in, subscription, DK cookie, server reachability, home folder — with a fix hint for
 anything that's wrong:
 
@@ -330,7 +330,7 @@ click **Allow access** when the prompt reappears (Private networks is enough).
 
 ### DK cookie expired during reconcile
 
-If you connected with `bettor-help cookie --login` (CLI 0.1.4+), the CLI refreshes the
+If you connected with `bettor-help cookie --login`, the CLI refreshes the
 session automatically — you should rarely see this. If reconcile still reports an expired
 cookie, your saved browser session itself has lapsed: run `bettor-help cookie --login`
 once more. (Manual-paste cookies expire regularly — re-paste via `bettor-help cookie`,
