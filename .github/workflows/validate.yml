@@ -12,7 +12,11 @@ concurrency:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    # Migrated to the recreational-spreadsheeting MicroVM runner plane
+    # (cdk-github-microvm-runners). Ephemeral ARM64 Lambda MicroVM, powerless
+    # (no AWS creds — this job needs none). The `microvm` label routes the
+    # queued job to the plane's webhook; `self-hosted` is the standard gate.
+    runs-on: [self-hosted, microvm]
     steps:
       - uses: actions/checkout@v6
         with:
