@@ -19,7 +19,9 @@ Note: `upload_contest_field` is **MLB only** today. It rejects non-DK `site` val
 bettor-help daily-capture --date 2026-06-28 --sport mlb --fetch
 ```
 
-This does the whole settled-slate capture in one shot: pulls your **entry history straight from DK** via your cookie session (`--fetch` — the ground truth for which contests you actually entered), fetches standings for each entered contest, uploads the field in chunks, reconciles your results, and prints a summary. **Idempotent — safe to re-run.** A single contest's fetch failure never aborts the rest; the exit code is non-zero only when a contest genuinely failed.
+This does the whole settled-slate capture in one shot: pulls your **entry history straight from DK** via your cookie session (`--fetch` — the ground truth for which contests you actually entered), fetches standings for each entered contest, uploads the field in chunks, reconciles your results, and prints a summary. **Idempotent — safe to re-run.** A single contest's fetch failure never aborts the rest.
+
+> ⚠️ **The exit code does not mean the capture worked.** `daily-capture` exits **0** even when it captured nothing and even when every upload failed. A run that fetched 105 contests and then failed 105/105 uploads still exited 0 (observed 2026-07-26). Never treat exit 0 — or a clean-looking log — as evidence. Always run the verification in **Did the capture actually land?** below.
 
 Without `--fetch` it falls back to DK's "Download Entry History" CSV export (newest `draftkings-contest-entry-history*.csv` in `~/Downloads`, or `--entry-history-file <path>`). Prefer `--fetch` — the live pull is always current, whereas a downloaded export covers everything only through the most recent settlement at download time.
 
@@ -81,12 +83,45 @@ upload_contest_field({
 })
 ```
 
-Start an MLB sport session first — `upload_contest_field` appears once the connector re-lists tools. The tool writes bronze contest standings + contests to the global lake with `source="client_upload"`. **Idempotent** — re-uploading the same contest is a no-op (safe to re-run).
+The tool writes bronze contest standings + contests to the global lake with `source="client_upload"`. **Idempotent** — re-uploading the same contest is a no-op (safe to re-run).
 
-Important notes on the payload:
-- `draft_group_id` is the join key for the per-contest cash line — ensure it's present.
+#### `reduce` drops the metadata — always pass `--meta-json`
+
+`reduce` emits each contest with **only** `contest_id`. The lake finalizes a contest on its **first** upload and every later upload is a no-op, so metadata that isn't in the first payload **can never be added**. Build a meta file and pass it:
+
+```
+bettor-help reduce --slate-date 2026-06-28 --sport mlb \
+  --standings-dir ~/bettor-help/2026-06-28/results \
+  --meta-json ./meta.json --out ./payload.json
+```
+
+`meta.json` is a map keyed by contest-id string. The **only** accepted fields are `draft_group_id`, `entry_fee`, and `places_paid` — `contest_name` and friends are silently dropped:
+
+```json
+{ "192707595": { "draft_group_id": 151056, "entry_fee": 1, "places_paid": 10 } }
+```
+
+All three come from the cookieless detail API; `places_paid` is `max(payoutSummary[].maxPosition)`:
+
+```
+curl -s "https://api.draftkings.com/contests/v1/contests/<id>?format=json"
+```
+
+`draft_group_id` is the join key for the per-contest cash line. **Verify it is present in the payload before uploading** — a contest finalized without it is unrepairable.
+
+#### Upload size ceilings
+
+Two separate limits, both discovered the hard way (2026-07-26):
+
+- **Whole payload** — over ~18MB the request dies with `http 413: Request Too Long`. Chunk the contest list to **≤2.5MB per upload**.
+- **Single contest** — any one contest with **≥~3,700 standings rows** fails with a bare `upstream_error`. ≤3,248 rows succeeds. This is reproducible, not transient, and retrying does not help.
+
+The second limit bites exactly the contests you most want: large-field GPPs are the ownership source. `bettor-help upload --payload` exposes no `--cursor`, so a big GPP **cannot** be safely split from the CLI — splitting one contest's rows across independent calls risks finalizing it with a partial field, which is worse than having no data and cannot be undone. If you hit `upstream_error`, **leave that contest pending and report it**; the standings CSV stays on disk for a later re-upload.
+
+Other payload notes:
 - The reducer refuses non-final standings (`TimeRemaining != 0`) unless you pass `--allow-nonfinal`. Re-fetch after the slate fully settles for accurate cash lines.
 - Omit `--contest-id` to include every standings file in the local directory.
+- `reduce` needs `--standings-dir ~/bettor-help/<date>/results`; its default points elsewhere.
 
 ### 5. Record your own entries and results (per-user half)
 
@@ -109,6 +144,72 @@ bettor-help reconcile --sport mlb --date 2026-06-28 --contest-id <id> [--contest
 ```
 
 Fetches standings for the given contests (with per-contest delays), builds the payload, and uploads the global half. Without `--contest-id` it falls back to discovering the live lobby — fine pre-lock, but for a settled slate pass explicit IDs or use `daily-capture`, which resolves them from your DK entry history.
+
+## "Which sport should I use?" — the lapsed sport lock
+
+If an upload fails with:
+
+```
+upload_contest_field returned an error: Which sport should I use — GOLF, MLB, NASCAR, NFL?
+```
+
+nothing is wrong with your payload, your cookie, or your data. The **server-side sport lock has lapsed**. Fix it in one call and retry the upload:
+
+```
+start_sport_session(sport="mlb")
+```
+
+What makes this trap dangerous:
+
+- **The lock is per-user persistent server-side state — not per-MCP-session**, despite `start_sport_session`'s description saying "this MCP session". Setting it from any client unblocks a *different* process (calling it in Claude fixes a failing `bettor-help` CLI run), and it survives MCP session expiry.
+- **The CLI never sets it itself**, and `--sport mlb` does **not** propagate to `upload_contest_field` — not on the `daily-capture` path, not on the `reconcile` path, and `bettor-help upload` has no sport flag at all. So a lapsed lock breaks *every* upload route until someone calls `start_sport_session` out of band.
+- **It fails silently.** Combined with exit 0, a lapsed lock can drop days of capture with nothing in the log that looks like an error.
+
+Recovery is cheap because a failed upload **does not** poison the ledger (`~/.bettor-help/capture-ledger.json`) and fetched standings persist in `~/bettor-help/<date>/results/`. Re-upload never requires a re-fetch.
+
+## Did the capture actually land?
+
+Exit codes and logs lie here. Verify against the data, every time:
+
+**1. The local ledger** — how many contests were recorded per slate date:
+
+```
+python3 -c "import json,collections; d=json.load(open('$HOME/.bettor-help/capture-ledger.json')); \
+c=collections.Counter(v['slate_date'] for v in d.values()); [print(k,c[k]) for k in sorted(c)]"
+```
+
+A slate date that's missing or far below its neighbours means the capture didn't happen.
+
+**2. The lake's own coverage view** — the authoritative check:
+
+```
+get_ownership_history({date_range: {start: "<date>", end: "<date>"}})
+```
+
+Read the `coverage` block: every `(slate_date, draft_group_id)` pair should be `covered: true` with a plausible `n_contests`. Then read `ref_field_size` on the rows — that is the field size ownership was actually derived from. If it's a few thousand where the slate had a 15K+ mini-MAX, the large GPPs failed to upload and **the slate's ownership is thin even though it reads as covered**. Covered ≠ complete.
+
+**3. The upload summary line** — `Field upload: N finalized, ..., M failed`. Any non-zero `failed` is a real failure regardless of exit code.
+
+## Capturing a slate you didn't enter (zero-entry capture)
+
+With no entries there's no entry history to resolve, but the field data — cash lines and %Drafted — is still valuable and still capturable:
+
+```
+bettor-help daily-capture --zero-entry --targets-file <targets.json> \
+  --date <date> --sport mlb
+```
+
+`targets.json` maps a label to a list of contest-id strings:
+
+```json
+{ "main-dg151056": ["192707531", "..."], "early-dg151321": ["..."], "slate_date": "2026-07-25" }
+```
+
+> ⚠️ **A targets file is only valid for the slate date it was built for.** If it goes stale, the run re-probes the *previous* day's contest IDs, finds them all already-captured or cancelled, logs `Targets: N | kept: 0 | skipped: N`, and exits **0**. That is what a dead capture looks like — it is not distinguishable from success by exit code. **`kept: 0` is always a failure.**
+>
+> A stale targets file also *masks* other faults: with nothing kept, the run never attempts an upload, so a lapsed sport lock stays invisible until someone fixes the targets.
+
+Building the target list for a locked slate: see **`dfs-results`** → "Score an un-entered slate". Two rules that matter most — read the lake's `raw/dk_lobby` snapshots before probing the contest-ID space, and make sure the list includes the **large-field GPPs**, which sit thousands of IDs away from the Double-Up block and are the ownership source.
 
 ## Recovering unattributed entries
 
