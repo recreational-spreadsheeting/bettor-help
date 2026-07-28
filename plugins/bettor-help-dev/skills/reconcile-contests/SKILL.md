@@ -109,14 +109,25 @@ curl -s "https://api.draftkings.com/contests/v1/contests/<id>?format=json"
 
 `draft_group_id` is the join key for the per-contest cash line. **Verify it is present in the payload before uploading** — a contest finalized without it is unrepairable.
 
-#### Upload size ceilings
+#### `upload --payload` cannot handle large contests — use `daily-capture`
 
-Two separate limits, both discovered the hard way (2026-07-26):
+`bettor-help upload --payload` sends what you give it in one shot. It has two ceilings:
 
-- **Whole payload** — over ~18MB the request dies with `http 413: Request Too Long`. Chunk the contest list to **≤2.5MB per upload**.
-- **Single contest** — any one contest with **≥~3,700 standings rows** fails with a bare `upstream_error`. ≤3,248 rows succeeds. This is reproducible, not transient, and retrying does not help.
+- **Whole payload** — over ~18MB the request dies with `http 413: Request Too Long`.
+- **Single contest** — any one contest with **≥~3,700 standings rows** fails with a bare `upstream_error` (≤3,248 succeeds). Reproducible across days; retrying never helps.
 
-The second limit bites exactly the contests you most want: large-field GPPs are the ownership source. `bettor-help upload --payload` exposes no `--cursor`, so a big GPP **cannot** be safely split from the CLI — splitting one contest's rows across independent calls risks finalizing it with a partial field, which is worse than having no data and cannot be undone. If you hit `upstream_error`, **leave that contest pending and report it**; the standings CSV stays on disk for a later re-upload.
+The second ceiling bites exactly the contests you most want, since large-field GPPs are the ownership source.
+
+**`daily-capture` does not have this problem.** It chunks internally, and handles contests far beyond the `upload --payload` ceiling — a single **47,562-entry** contest and a 129-contest / 199,857-row slate both uploaded cleanly (2026-07-27). The ceiling is a property of the un-chunked `upload --payload` path, **not** of `upload_contest_field` itself.
+
+So if you hit `http 413` or `upstream_error`, do **not** conclude the contest is uncapturable and do **not** try to split one contest's rows across independent `upload` calls — that risks finalizing it with a partial field, which is unrepairable. Instead, re-run it through `daily-capture` with a targets file naming just the affected contests:
+
+```
+bettor-help daily-capture --zero-entry --targets-file ./retry.json \
+  --date <slate-date> --sport mlb
+```
+
+This recovered 12 large-field GPPs (103,195 rows) that `upload --payload` had rejected 12/12 — and it moved that slate's ownership source from a 2,972-entry field to a 17,835-entry one, shifting top-of-slate ownership by 5-6pp. Treat `upload --payload` as the small-contest / debugging path only.
 
 Other payload notes:
 - The reducer refuses non-final standings (`TimeRemaining != 0`) unless you pass `--allow-nonfinal`. Re-fetch after the slate fully settles for accurate cash lines.
@@ -187,6 +198,10 @@ get_ownership_history({date_range: {start: "<date>", end: "<date>"}})
 ```
 
 Read the `coverage` block: every `(slate_date, draft_group_id)` pair should be `covered: true` with a plausible `n_contests`. Then read `ref_field_size` on the rows — that is the field size ownership was actually derived from. If it's a few thousand where the slate had a 15K+ mini-MAX, the large GPPs failed to upload and **the slate's ownership is thin even though it reads as covered**. Covered ≠ complete.
+
+This is not a cosmetic distinction. On 2026-07-25, recovering the large GPPs moved the ownership source from a 2,972-entry field to a 17,835-entry one and shifted top-of-slate ownership by 5-6pp (one pitcher 51.7% → 58.1%, another 52.8% → 47.7%). A slate that reads `covered: true` off a small field is quietly wrong, not merely incomplete — so check `ref_field_size` against the biggest contest the slate actually ran, and re-run through `daily-capture` if it's short.
+
+Also note `in_pool` may be `false` with empty `player` names for a slate captured the same day; the pool build catches up overnight and it flips to `true`. Re-check the next day before treating it as a problem.
 
 **3. The upload summary line** — `Field upload: N finalized, ..., M failed`. Any non-zero `failed` is a real failure regardless of exit code.
 
