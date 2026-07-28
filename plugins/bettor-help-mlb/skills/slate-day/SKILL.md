@@ -40,9 +40,28 @@ the gates.
    ✅ **Gate: the summary reports `0 UNATTRIBUTED`.** If it doesn't, some entries missed their
    evening stamp — run the recovery flow in **`reconcile-contests`**'s "Recovering unattributed
    entries" section before trusting any per-profile numbers from this slate day.
+
+   ✅ **Gate: the capture actually landed.** `daily-capture` exits **0** even when it captured
+   nothing and even when every upload failed — the exit code proves nothing. Confirm
+   `Field upload: N finalized` with `0 failed` and a non-zero `kept`, then verify against the
+   data using **`reconcile-contests`** → "Did the capture actually land?". `kept: 0` is always a
+   failure. An upload erroring with `Which sport should I use — ...` just needs
+   `start_sport_session(sport="mlb")` and a retry.
 6. **Score** — pull `get_results_report` and read the `dfs-results` skill for how to interpret
    it: dollar-ROI as the headline metric, DK's payout API as ground truth. Read the `per_profile`
    bucket specifically to compare profiles on real ROI, not just the aggregate.
+
+## Days you didn't play
+
+The field data — cash lines and %Drafted — is worth capturing whether or not you entered, and
+this is the path most likely to rot unnoticed because no one is watching for their own results.
+
+Run the zero-entry capture (see **`reconcile-contests`** → "Capturing a slate you didn't enter"),
+and note the standing prerequisite: **the targets file must be rebuilt for each slate date.** A
+stale one makes the run re-probe yesterday's contest IDs and report `kept: 0` while exiting 0.
+
+Build the targets **before the slate locks** — once contests lock they drop out of the lobby and
+recovering their IDs means reconstructing them after the fact.
 
 ## Why the gate is here, not buried in the build skill
 

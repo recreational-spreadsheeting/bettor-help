@@ -9,6 +9,8 @@ How to score and reconcile DraftKings DFS contest results faithfully: the headli
 
 **Always pull the data first.** Never narrate outcomes from session memory or an unverified ingest.
 
+**And never infer that data arrived from a command exiting cleanly.** The capture pipeline has several failure modes that exit **0** with no error in the log — a stale targets file, a lapsed sport lock, a wholly failed upload. Before reporting on any recent slate, confirm it actually landed: see **`reconcile-contests`** → "Did the capture actually land?".
+
 ## Entries come from DK, not local artifacts
 
 "What did I enter last night" is answered by **DK's entry history**, never by local files. The one-command path:
@@ -67,7 +69,15 @@ If entries show up under `unattributed` instead of a named profile, see **`recon
 
 When you didn't enter a slate but want to know what you would have scored:
 
-1. **Find a contest on the locked draft group.** Locked slates drop out of the public lobby. Exhaustively probe the contest-ID space near a known same-day contest (the `draftGroupId` field in the DK contests API response identifies the draft group). Sample broadly to locate the cluster, then scan every ID in that window.
+1. **Find a contest on the locked draft group.** Locked slates drop out of the public lobby.
+
+   **Read the lake first.** `raw/dk_lobby/slate_date=*/site=dk/` holds cookieless intraday lobby snapshots and already contains the contest IDs for locked slates. Probing the ID space is the **fallback**, only for contests spawned after the last snapshot — it costs thousands of API calls to rediscover what the lake already has.
+
+   If you must probe: exhaustively scan the contest-ID space near a known same-day contest (the `draftGroupId` field in the DK contests API response identifies the draft group). Sample broadly to locate the cluster, then scan every ID in that window.
+
+   > ⚠️ **The Double-Up block and the large-GPP block are not adjacent.** On 2026-07-25 the Double-Ups sat at `1927074xx–1927076xx` while the mini-MAX / Relay Throw / Solo Shot / Rally Cap block sat ~3,000 IDs higher at `1927105xx`. A window covering only the Double-Ups produced 105 targets across both draft groups and looked complete — while containing **zero** large-field GPPs, i.e. no ownership source at all. Widen until both blocks are bounded with slack, and sanity-check that your target list contains contests with ≥5,000 max entries before trusting it.
+
+   Also: a day with only two Classic draft groups is not necessarily a partial scan — Saturdays commonly run Early + Main with no `(Night)` group.
 
 2. **Pull a large GPP, not a small Double-Up.** DK prunes small contests' standings within days. A large-field GPP on the same draft group keeps its standings and covers the full player pool.
 
