@@ -5,6 +5,7 @@
   "description": "Tooling shell for the bettor-help Claude Code plugin marketplace. Holds validation and dev-plugin generation scripts; the plugins themselves ship from plugins/.",
   "scripts": {
     "validate": "node scripts/validate-plugin.mjs",
+    "test:nfl-build": "node scripts/nfl-build-checks.mjs",
     "gen:dev": "node scripts/gen-dev-plugin.mjs",
     "check:dev": "node scripts/gen-dev-plugin.mjs --check"
   }

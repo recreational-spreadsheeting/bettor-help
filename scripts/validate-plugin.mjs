@@ -7,6 +7,7 @@
 
 import { readFileSync, statSync, readdirSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
+import { runNflBuildChecks } from "./nfl-build-checks.mjs";
 
 const ROOT = process.cwd();
 const errors = [];
@@ -121,6 +122,16 @@ if (existsSync(pluginsDir) && statSync(pluginsDir).isDirectory()) {
   }
 } else {
   console.log(`(no plugins/ dir — skipping plugin validation)`);
+}
+
+// ---- 3. nfl-build skill structural + call-trace fixture checks ----
+if (existsSync(join(ROOT, "plugins", "bettor-help-nfl"))) {
+  const { errors: nflErrors, oks: nflOks } = runNflBuildChecks(ROOT);
+  for (const o of nflOks) console.log(`\u2713 ${o}`);
+  for (const e of nflErrors) {
+    errors.push(e);
+    console.log(`::error::${e}`);
+  }
 }
 
 if (errors.length > 0) {

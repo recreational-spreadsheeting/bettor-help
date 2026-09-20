@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "bettor-help": {
+      "type": "http",
+      "url": "https://mcp.dev.bettor.help/mcp",
+      "oauth": {
+        "clientId": "R9MjZwVsjidtBPJW",
+        "callbackPort": 8766
+      }
+    }
+  }
+}
