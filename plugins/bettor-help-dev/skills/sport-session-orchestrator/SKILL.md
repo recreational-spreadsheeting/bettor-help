@@ -33,7 +33,8 @@ preview_sport(sport="golf")
 
 | Goal | Skill to use |
 |------|-------------|
-| Build lineups | **`mlb-build`** (MLB) — or the equivalent skill for your sport |
+| Build lineups | **`mlb-build`** (MLB), **`nfl-build`** (NFL) — or the equivalent skill for your sport |
+| Consult private ETR content during an NFL build | **`nfl-build`** (NFL) — blind, informed, and compare workflows |
 | Manage build profiles | **`profiles`** — create, save, tune, and recommend profiles |
 | Score and report results | **`dfs-results`** — dollar-ROI, DK payout API, standings |
 | Upload contest field after contests settle | **`reconcile-contests`** — fetch standings + upload field |

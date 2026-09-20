@@ -79,6 +79,42 @@
         "testing"
       ],
       "category": "productivity"
+    },
+    {
+      "name": "bettor-help-nfl",
+      "source": "./plugins/bettor-help-nfl",
+      "description": "NFL-specific DFS lineup builder. Projections, ownership modeling, optimizer, and private ETR content intelligence (blind, informed, and compare workflows) for NFL daily fantasy.",
+      "version": "1.1.6",
+      "author": {
+        "name": "Court Schuett"
+      },
+      "license": "MIT",
+      "keywords": [
+        "bettor-help",
+        "dfs",
+        "nfl",
+        "football",
+        "lineup-builder"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "bettor-help-nfl-dev",
+      "source": "./plugins/bettor-help-nfl-dev",
+      "description": "[DEV CHANNEL \u2014 points at the dev environment, for testing] NFL-specific DFS lineup builder. Projections, ownership modeling, optimizer, and private ETR content intelligence (blind, informed, and compare workflows) for NFL daily fantasy.",
+      "version": "1.1.6",
+      "author": {
+        "name": "Court Schuett"
+      },
+      "license": "MIT",
+      "keywords": [
+        "bettor-help",
+        "dfs",
+        "nfl",
+        "dev",
+        "testing"
+      ],
+      "category": "productivity"
     }
   ]
 }

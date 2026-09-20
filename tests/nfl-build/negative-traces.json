@@ -1,0 +1,61 @@
+{
+  "description": "Negative fixtures for nfl-build. Each trace MUST be rejected by validateTrace() in scripts/nfl-build-checks.mjs with an error matching `expectedError` (substring). These encode the design §12 / plan Task 5 prohibitions.",
+  "cases": [
+    {
+      "name": "retrieval-before-baseline",
+      "mode": "compare",
+      "expectedError": "content call before baseline",
+      "trace": [
+        { "call": "nfl_list_content", "args": {} },
+        { "call": "build_lineups", "role": "baseline", "mode": "projections_only" },
+        { "call": "USER_CONFIRMATION" },
+        { "call": "build_lineups", "role": "informed", "mode": "etr_informed" },
+        { "call": "COMPARE_POOL_DIGESTS", "digests_equal": true }
+      ]
+    },
+    {
+      "name": "content-call-in-blind-mode",
+      "mode": "projections_only",
+      "expectedError": "content call in projections_only",
+      "trace": [
+        { "call": "nfl_search_content", "args": { "query": "x", "limit": 5 } },
+        { "call": "build_lineups", "role": "baseline", "mode": "projections_only" }
+      ]
+    },
+    {
+      "name": "blind-label-after-prior-etr-retrieval",
+      "mode": "projections_only",
+      "prior_etr_retrieval_in_conversation": true,
+      "expectedError": "blind label after prior ETR retrieval",
+      "trace": [
+        { "call": "build_lineups", "role": "baseline", "mode": "projections_only" }
+      ]
+    },
+    {
+      "name": "mutation-before-user-confirmation",
+      "mode": "compare",
+      "expectedError": "mutation before user confirmation",
+      "trace": [
+        { "call": "build_lineups", "role": "baseline", "mode": "projections_only" },
+        { "call": "get_build_provenance", "role": "baseline" },
+        { "call": "nfl_list_content", "args": {} },
+        { "call": "build_lineups", "role": "informed", "mode": "etr_informed", "user_changes": [{ "action": "lock", "target": "p1" }] },
+        { "call": "COMPARE_POOL_DIGESTS", "digests_equal": true }
+      ]
+    },
+    {
+      "name": "digest-mismatch-reported-as-etr-effect",
+      "mode": "compare",
+      "expectedError": "digest mismatch",
+      "trace": [
+        { "call": "build_lineups", "role": "baseline", "mode": "projections_only" },
+        { "call": "get_build_provenance", "role": "baseline" },
+        { "call": "nfl_list_content", "args": {} },
+        { "call": "USER_CONFIRMATION" },
+        { "call": "build_lineups", "role": "informed", "mode": "etr_informed" },
+        { "call": "get_build_provenance", "role": "informed" },
+        { "call": "COMPARE_POOL_DIGESTS", "digests_equal": false, "outcome": "report_differences" }
+      ]
+    }
+  ]
+}
