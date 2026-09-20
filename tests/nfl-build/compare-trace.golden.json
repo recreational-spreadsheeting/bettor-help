@@ -1,0 +1,20 @@
+{
+  "description": "Golden MCP call trace for nfl-build `compare` mode. The validator (scripts/nfl-build-checks.mjs) asserts this ordering: the projections_only baseline is built and its provenance read BEFORE the first content call; user confirmation precedes the informed rebuild; the informed rebuild reuses identical settings; pool digests are compared last. Content tools are the only three: nfl_list_content / nfl_search_content / nfl_get_content.",
+  "settings": {
+    "profile": "nfl-cash@3",
+    "slate_id": "main",
+    "count": 1,
+    "seed": 20260919
+  },
+  "trace": [
+    { "call": "build_lineups", "role": "baseline", "mode": "projections_only", "settings_ref": true },
+    { "call": "get_build_provenance", "role": "baseline" },
+    { "call": "nfl_list_content", "args": { "season": 2026, "nfl_week": 3, "slate_id": "main", "as_of": "2026-09-19T16:00:00Z" } },
+    { "call": "nfl_search_content", "args": { "query": "wr matchup leverage", "limit": 10 } },
+    { "call": "nfl_get_content", "args": { "document_version_id": "sha256-abc", "cursor": null } },
+    { "call": "USER_CONFIRMATION" },
+    { "call": "build_lineups", "role": "informed", "mode": "etr_informed", "settings_ref": true },
+    { "call": "get_build_provenance", "role": "informed" },
+    { "call": "COMPARE_POOL_DIGESTS", "digests_equal": true, "outcome": "report_differences" }
+  ]
+}

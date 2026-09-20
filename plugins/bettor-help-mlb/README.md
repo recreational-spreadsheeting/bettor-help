@@ -15,7 +15,18 @@ MLB-specific DFS lineup builder for Claude Code.
 Then authenticate:
 
 ```
-npm install -g @bettor-help/cli
+curl -fsSL https://get.bettor.help | sh   # macOS/Linux
+```
+
+On Windows (PowerShell):
+
+```
+irm https://get.bettor.help/install.ps1 | iex
+```
+
+Then:
+
+```
 bettor-help login
 ```
 

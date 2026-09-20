@@ -31,7 +31,7 @@ import { join, dirname, relative } from "node:path";
 const ROOT = process.cwd();
 
 // Canonical plugins to generate dev variants for.
-const CANONICAL_PLUGINS = ["bettor-help", "bettor-help-mlb"];
+const CANONICAL_PLUGINS = ["bettor-help", "bettor-help-mlb", "bettor-help-nfl"];
 
 // Dev-environment overrides — the only thing that differs from prod.
 const DEV = {
